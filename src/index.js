@@ -21,6 +21,21 @@ app.use(morgan("dev"));
 // CORS
 app.use(cors());
 
+// DB CONNECTION
+if (!process.env.MONGODB_URI) {
+  throw Error("Database connection string not found");
+}
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("Successfully connected to the database");
+  })
+  .catch((err) => {
+    console.log("Failed to connect to the database");
+    console.log("Error: ", err);
+  });
+
 // ROUTES
 app.get("/", (req, res) => {
   res.send("Welcome to PAW 10 Backend Service");
