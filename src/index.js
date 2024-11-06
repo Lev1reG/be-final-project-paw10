@@ -41,6 +41,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to PAW 10 Backend Service");
 });
 
+app.use("/auth", require("./routes/authentication"));
+
 // APP LISTEN
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");
