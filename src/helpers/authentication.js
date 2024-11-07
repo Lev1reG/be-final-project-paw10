@@ -24,9 +24,7 @@ const decodeSessionJwt = (req, res) => {
   const sessionJwt = req.cookies["PAW_10_2024"];
 
   if (!sessionJwt) {
-    return res.status(401).json({
-      message: "Cookie not found",
-    });
+    throw new Error("Cookie not found");
   }
 
   const decodedToken = jwt.verify(
@@ -35,9 +33,7 @@ const decodeSessionJwt = (req, res) => {
   );
 
   if (!decodedToken) {
-    return res.status(401).json({
-      message: "Unauthorized",
-    });
+    throw new Error("Invalid token");
   }
 
   return decodedToken;
