@@ -119,6 +119,19 @@ const loginUser = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  res.clearCookie("PAW_10_2024", {
+    path: "/",
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+  });
+
+  return res.status(200).json({
+    message: "Logout successful",
+  });
+};
+
 const getUserSession = async (req, res) => {
   try {
     const decodedToken = decodeSessionJwt(req, res);
@@ -152,4 +165,5 @@ module.exports = {
   registerUser,
   loginUser,
   getUserSession,
+  logoutUser,
 };
