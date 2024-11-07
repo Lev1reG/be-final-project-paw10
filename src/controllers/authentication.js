@@ -118,7 +118,36 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUserSession = async (req, res) => {
+  try {
+    const decodedToken = decodeSessionJwt(req, res);
+
+    const existingUser = await getUserBySessionToken(decodedToken.sessionToken);
+
+    if (!existingUser) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const session = {
+      username: existingUser.username,
+      email: existingUser.email,
+    };
+
+    return res.status(200).json({
+      session,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  getUserSession,
 };
