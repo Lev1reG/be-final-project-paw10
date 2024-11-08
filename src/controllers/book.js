@@ -1,4 +1,16 @@
-const { getBookByIsbn, createBook } = require("../models/Book");
+const { getBookByIsbn, createBook, getBooks } = require("../models/Book");
+
+const retrieveAllBooks = async (req, res) => {
+  try {
+    const books = await getBooks();
+    return res.status(200).send(books);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
 
 const createNewBook = async (req, res) => {
   try {
@@ -56,4 +68,5 @@ const createNewBook = async (req, res) => {
 
 module.exports = {
   createNewBook,
+  retrieveAllBooks,
 };
