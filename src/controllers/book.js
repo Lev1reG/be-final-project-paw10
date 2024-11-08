@@ -18,6 +18,26 @@ const retrieveAllBooks = async (req, res) => {
   }
 };
 
+const retrieveBookById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const book = await getBookById(id);
+
+    if (!book) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    return res.status(200).send(book);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 const createNewBook = async (req, res) => {
   try {
     const {
@@ -131,4 +151,5 @@ module.exports = {
   createNewBook,
   retrieveAllBooks,
   updateBook,
+  retrieveBookById,
 };
