@@ -1,4 +1,10 @@
-const { getBookByIsbn, createBook, getBooks } = require("../models/Book");
+const {
+  getBookByIsbn,
+  createBook,
+  getBooks,
+  getBookById,
+  updateBookById,
+} = require("../models/Book");
 
 const retrieveAllBooks = async (req, res) => {
   try {
@@ -66,7 +72,63 @@ const createNewBook = async (req, res) => {
   }
 };
 
+const updateBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      authors,
+      isbn,
+      publisher,
+      year,
+      genres,
+      description,
+      language,
+      coverImageUrl,
+      stock,
+    } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
+    }
+
+    const existingBook = await getBookById(id);
+
+    if (!existingBook) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    const updatedBook = await updateBookById(id, {
+      title,
+      authors,
+      isbn,
+      publisher,
+      year,
+      genres,
+      description,
+      language,
+      coverImageUrl,
+      stock,
+    });
+
+    return res.status(200).json({
+      message: "Book updated successfully",
+      book: updatedBook,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createNewBook,
   retrieveAllBooks,
+  updateBook,
 };
