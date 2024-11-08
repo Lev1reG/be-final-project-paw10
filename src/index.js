@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", require("./routes/authentication"));
+app.use("/books", require("./routes/book"));
 
 // APP LISTEN
 app.listen(5000, () => {
