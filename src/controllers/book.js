@@ -23,6 +23,13 @@ const retrieveAllBooks = async (req, res) => {
 const retrieveBookById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid book id",
+      });
+    }
+
     const book = await getBookById(id);
 
     if (!book) {
