@@ -8,6 +8,12 @@ const {
   deleteBookById,
   BookModel,
 } = require("../models/Book");
+const { 
+  createBorrowingRecord, 
+  alreadyBorrowed 
+} = require("../models/BorrowingRecords");
+const { decodeSessionJwt } = require("../helpers/authentication");
+const { getUserBySessionToken } = require("../models/User");
 
 const retrieveAllBooks = async (req, res) => {
   try {
@@ -262,6 +268,74 @@ const updateBook = async (req, res) => {
   }
 };
 
+const borrowBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const decodedToken = decodeSessionJwt(req, res);
+    const user = await getUserBySessionToken(decodedToken.sessionToken);
+
+    const userId = user._id;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid book id",
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const book = await getBookById(id);
+    if (!book) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    if (book.stock <= 0) {
+      return res.status(400).json({
+        message: "Book is out of stock",
+      });
+    }
+
+    const record = await alreadyBorrowed(id, userId);
+
+    if (record) {
+      return res.status(400).json({
+        message: "You have already borrowed this book",
+      });
+    }
+
+    book.stock -= 1;
+    await book.save();
+
+    const borrowDate = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 7);
+
+    await createBorrowingRecord({
+      book: id,
+      user: userId,
+      borrowDate,
+      dueDate,
+    });
+
+    return res.status(200).json({
+      message: "Book borrowed successfully",
+      book,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 const searchBooks = async (req, res) => {};
 
 module.exports = {
@@ -271,4 +345,5 @@ module.exports = {
   retrieveBookById,
   deleteBook,
   createNewBooks,
+  borrowBook,
 };
