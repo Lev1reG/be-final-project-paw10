@@ -11,8 +11,29 @@ const {
 
 const retrieveAllBooks = async (req, res) => {
   try {
-    const books = await getBooks();
-    return res.status(200).send(books);
+    let { page = 1, limit = 10 } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1) limit = 10;
+
+    const books = await getBooks()
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalBooks = await getBooks().countDocuments();
+
+    return res.status(200).json({
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalBooks / limit),
+        pageSize: limit,
+        totalBooks,
+      },
+      books,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
