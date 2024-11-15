@@ -22,6 +22,7 @@ const BookSchema = new mongoose.Schema({
   description: String,
   language: String,
   coverImageUrl: String,
+  pages: Number,
   stock: {
     type: Number,
     required: true,
@@ -66,4 +67,5 @@ module.exports = {
   getBooksByAuthor,
   getBooksByGenre,
   getBooksByYear,
+  BookModel,
 };

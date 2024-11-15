@@ -6,6 +6,7 @@ const {
   getBookById,
   updateBookById,
   deleteBookById,
+  BookModel,
 } = require("../models/Book");
 
 const retrieveAllBooks = async (req, res) => {
@@ -47,6 +48,55 @@ const retrieveBookById = async (req, res) => {
   }
 };
 
+const createNewBooks = async (req, res) => {
+  try {
+    const books = req.body;
+
+    // Check if the input is an array
+    if (!Array.isArray(books) || books.length === 0) {
+      return res.status(400).json({
+        message: "Request body must be an array of books",
+      });
+    }
+
+    // Validate required fields for each book
+    const missingFields = books.some(
+      (book) => !book.title || !book.authors || !book.isbn || !book.stock,
+    );
+
+    if (missingFields) {
+      return res.status(400).json({
+        message:
+          "One or more books are missing required fields (title, authors, isbn, stock)",
+      });
+    }
+
+    // Check if any of the ISBNs already exist
+    const isbns = books.map((book) => book.isbn);
+    const existingBooks = await BookModel.find({ isbn: { $in: isbns } });
+
+    if (existingBooks.length > 0) {
+      const existingIsbns = existingBooks.map((book) => book.isbn);
+      return res.status(400).json({
+        message: `Books with the following ISBNs already exist: ${existingIsbns.join(", ")}`,
+      });
+    }
+
+    // Create new books using insertMany for bulk insertion
+    const newBooks = await BookModel.insertMany(books);
+
+    return res.status(201).json({
+      message: "Books registered successfully",
+      books: newBooks,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 const createNewBook = async (req, res) => {
   try {
     const {
@@ -60,6 +110,7 @@ const createNewBook = async (req, res) => {
       language,
       coverImageUrl,
       stock,
+      pages,
     } = req.body;
 
     if (!title || !authors || !isbn || !stock) {
@@ -87,6 +138,7 @@ const createNewBook = async (req, res) => {
       language,
       coverImageUrl,
       stock,
+      pages,
     });
 
     return res.status(201).json({
@@ -146,6 +198,7 @@ const updateBook = async (req, res) => {
       language,
       coverImageUrl,
       stock,
+      pages,
     } = req.body;
 
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -173,6 +226,7 @@ const updateBook = async (req, res) => {
       language,
       coverImageUrl,
       stock,
+      pages,
     });
 
     return res.status(200).json({
@@ -187,10 +241,13 @@ const updateBook = async (req, res) => {
   }
 };
 
+const searchBooks = async (req, res) => {};
+
 module.exports = {
   createNewBook,
   retrieveAllBooks,
   updateBook,
   retrieveBookById,
   deleteBook,
+  createNewBooks,
 };
