@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 const {
   getBookByIsbn,
   createBook,
@@ -141,7 +141,7 @@ const updateBook = async (req, res) => {
       stock,
     } = req.body;
 
-    if (!id) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Missing required fields",
       });
