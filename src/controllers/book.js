@@ -1,9 +1,11 @@
+const { default: mongoose } = require("mongoose");
 const {
   getBookByIsbn,
   createBook,
   getBooks,
   getBookById,
   updateBookById,
+  deleteBookById,
 } = require("../models/Book");
 
 const retrieveAllBooks = async (req, res) => {
@@ -92,6 +94,37 @@ const createNewBook = async (req, res) => {
   }
 };
 
+const deleteBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid book id",
+      });
+    }
+
+    const existingBook = await getBookById(id);
+
+    if (!existingBook) {
+      return res.status(404).json({
+        message: "Book not found",
+      });
+    }
+
+    await deleteBookById(id);
+
+    return res.status(200).json({
+      message: "Book deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
@@ -152,4 +185,5 @@ module.exports = {
   retrieveAllBooks,
   updateBook,
   retrieveBookById,
+  deleteBook,
 };
