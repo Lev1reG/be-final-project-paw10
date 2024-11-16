@@ -358,9 +358,9 @@ const borrowBook = async (req, res) => {
 
     const record = await alreadyBorrowed(id, userId);
 
-    if (record) {
+    if (record && !record.returnDate) {
       return res.status(400).json({
-        message: "You have already borrowed this book",
+        message: "You have already borrowed this book and haven't returned it yet",
       });
     }
 
