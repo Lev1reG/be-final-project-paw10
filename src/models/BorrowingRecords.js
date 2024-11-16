@@ -47,8 +47,12 @@ const alreadyBorrowed = async (bookId, userId) => {
   return record;
 };
 
+const getBorrowingRecordByUser = (userId) =>
+    BorrowingRecord.find({ user: userId }).populate("book");
+
 module.exports = {
   BorrowingRecord,
   createBorrowingRecord,
   alreadyBorrowed,
+  getBorrowingRecordByUser,
 }

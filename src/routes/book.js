@@ -13,5 +13,6 @@ router.patch("/:id", auth.ensureAdmin, bookController.updateBook);
 router.delete("/:id", auth.ensureAdmin, bookController.deleteBook);
 router.post("/borrow/:id", auth.ensureCustomer, bookController.borrowBook);
 router.post("/return/:id", auth.ensureCustomer, bookController.returnBook);
+router.get("/records", auth.ensureCustomer, bookController.getBorrowingRecords);
 
 module.exports = router;

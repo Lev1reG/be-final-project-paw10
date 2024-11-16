@@ -10,7 +10,8 @@ const {
 } = require("../models/Book");
 const { 
   createBorrowingRecord, 
-  alreadyBorrowed 
+  alreadyBorrowed, 
+  getBorrowingRecordByUser
 } = require("../models/BorrowingRecords");
 const { decodeSessionJwt } = require("../helpers/authentication");
 const { getUserBySessionToken } = require("../models/User");
@@ -52,7 +53,7 @@ const retrieveBookById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid book id",
       });
@@ -184,7 +185,7 @@ const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid book id",
       });
@@ -228,9 +229,9 @@ const updateBook = async (req, res) => {
       pages,
     } = req.body;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: "Missing required fields",
+        message: "Invalid book id",
       });
     }
 
@@ -277,7 +278,7 @@ const returnBook = async (req, res) => {
 
     const userId = user._id;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid book id",
       });
@@ -331,7 +332,7 @@ const borrowBook = async (req, res) => {
 
     const userId = user._id;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         message: "Invalid book id",
       });
@@ -390,6 +391,30 @@ const borrowBook = async (req, res) => {
   }
 };
 
+const getBorrowingRecords = async (req, res) => {
+  try {
+    const decodedToken = decodeSessionJwt(req, res); 
+    const user = await getUserBySessionToken(decodedToken.sessionToken);
+
+    const userId = user._id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const records = await getBorrowingRecordByUser(userId);
+
+    return res.status(200).send(records);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    }); 
+  }
+};
+
 const searchBooks = async (req, res) => {};
 
 module.exports = {
@@ -401,4 +426,5 @@ module.exports = {
   createNewBooks,
   borrowBook,
   returnBook,
+  getBorrowingRecords,
 };
