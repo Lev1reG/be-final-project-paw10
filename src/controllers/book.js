@@ -268,6 +268,60 @@ const updateBook = async (req, res) => {
   }
 };
 
+const returnBook = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    const decodedToken = decodeSessionJwt(req, res);
+    const user = await getUserBySessionToken(decodedToken.sessionToken);
+
+    const userId = user._id;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid book id",
+      });
+    }
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const borrowingRecord = await alreadyBorrowed(id, userId);
+    if (!borrowingRecord) {
+      return res.status(400).json({
+        message: "You have not borrowed this book",
+      });
+    }
+
+    if (borrowingRecord.status === "returned") {
+      return res.status(400).json({
+        message: "You have already returned this book",
+      });
+    }
+
+    borrowingRecord.returnDate = new Date();
+    borrowingRecord.status = "returned";
+    await borrowingRecord.save();
+
+    const book = await getBookById(id);
+    book.stock += 1;
+    await book.save();
+
+    return res.status(200).json({
+      message: "Book returned successfully",
+      book,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    }); 
+  }
+}
+
 const borrowBook = async (req, res) => {
   try {
     const { id } = req.params;
@@ -346,4 +400,5 @@ module.exports = {
   deleteBook,
   createNewBooks,
   borrowBook,
+  returnBook,
 };
