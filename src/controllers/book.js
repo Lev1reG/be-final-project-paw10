@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const {
   getBookByIsbn,
   createBook,
@@ -52,12 +51,6 @@ const retrieveAllBooks = async (req, res) => {
 const retrieveBookById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid book id",
-      });
-    }
 
     const book = await getBookById(id);
 
@@ -185,12 +178,6 @@ const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid book id",
-      });
-    }
-
     const existingBook = await getBookById(id);
 
     if (!existingBook) {
@@ -228,12 +215,6 @@ const updateBook = async (req, res) => {
       stock,
       pages,
     } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid book id",
-      });
-    }
 
     const existingBook = await getBookById(id);
 
@@ -277,12 +258,6 @@ const returnBook = async (req, res) => {
     const user = await getUserBySessionToken(decodedToken.sessionToken);
 
     const userId = user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid book id",
-      });
-    }
 
     if (!userId) {
       return res.status(401).json({
@@ -331,12 +306,6 @@ const borrowBook = async (req, res) => {
     const user = await getUserBySessionToken(decodedToken.sessionToken);
 
     const userId = user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Invalid book id",
-      });
-    }
 
     if (!userId) {
       return res.status(401).json({
