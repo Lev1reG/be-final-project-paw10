@@ -43,6 +43,7 @@ app.get("/", (req, res) => {
 
 app.use("/auth", require("./routes/authentication"));
 app.use("/books", require("./routes/book"));
+app.use("/records", require("./routes/record"));
 
 // APP LISTEN
 app.listen(5000, () => {
