@@ -15,12 +15,6 @@ const ensureCustomer = async (req, res, next) => {
       });
     }
 
-    if (existingUser.role !== "customer") {
-      return res.status(401).json({
-        message: "You are not customer.",
-      });
-    }
-
     next();
   } catch (error) {
     console.log(error);
