@@ -81,13 +81,13 @@ const createNewBooks = async (req, res) => {
 
     // Validate required fields for each book
     const missingFields = books.some(
-      (book) => !book.title || !book.authors || !book.isbn || !book.stock,
+      (book) => !book.title || !book.author || !book.isbn || !book.stock,
     );
 
     if (missingFields) {
       return res.status(400).json({
         message:
-          "One or more books are missing required fields (title, authors, isbn, stock)",
+          "One or more books are missing required fields (title, author, isbn, stock)",
       });
     }
 
@@ -121,7 +121,7 @@ const createNewBook = async (req, res) => {
   try {
     const {
       title,
-      authors,
+      author,
       isbn,
       publisher,
       year,
@@ -133,7 +133,7 @@ const createNewBook = async (req, res) => {
       pages,
     } = req.body;
 
-    if (!title || !authors || !isbn || !stock) {
+    if (!title || !author || !isbn || !stock) {
       return res.status(400).json({
         message: "Missing required fields",
       });
@@ -149,7 +149,7 @@ const createNewBook = async (req, res) => {
 
     const newBook = await createBook({
       title,
-      authors,
+      author,
       isbn,
       publisher,
       year,
@@ -203,7 +203,7 @@ const updateBook = async (req, res) => {
     const { id } = req.params;
     const {
       title,
-      authors,
+      author,
       isbn,
       publisher,
       year,
@@ -225,7 +225,7 @@ const updateBook = async (req, res) => {
 
     const updatedBook = await updateBookById(id, {
       title,
-      authors,
+      author,
       isbn,
       publisher,
       year,
