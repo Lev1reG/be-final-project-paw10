@@ -7,10 +7,9 @@ const {
   deleteBookById,
   BookModel,
 } = require("../models/Book");
-const { 
-  createBorrowingRecord, 
-  alreadyBorrowed, 
-  getBorrowingRecordByUser
+const {
+  createBorrowingRecord,
+  alreadyBorrowed,
 } = require("../models/BorrowingRecords");
 const { decodeSessionJwt } = require("../helpers/authentication");
 const { getUserBySessionToken } = require("../models/User");
@@ -252,7 +251,7 @@ const updateBook = async (req, res) => {
 
 const returnBook = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
 
     const decodedToken = decodeSessionJwt(req, res);
     const user = await getUserBySessionToken(decodedToken.sessionToken);
@@ -294,9 +293,9 @@ const returnBook = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: "Something went wrong",
-    }); 
+    });
   }
-}
+};
 
 const borrowBook = async (req, res) => {
   try {
@@ -330,7 +329,8 @@ const borrowBook = async (req, res) => {
 
     if (record && !record.returnDate) {
       return res.status(400).json({
-        message: "You have already borrowed this book and haven't returned it yet",
+        message:
+          "You have already borrowed this book and haven't returned it yet",
       });
     }
 
@@ -360,7 +360,63 @@ const borrowBook = async (req, res) => {
   }
 };
 
-const searchBooks = async (req, res) => {};
+const searchBooks = async (req, res) => {
+  try {
+    const {
+      title,
+      available,
+      genre,
+      author,
+      language,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const filter = {};
+
+    if (title) {
+      filter.title = { $regex: title, $options: "i" };
+    }
+
+    if (available) {
+      filter.stock = { $gt: 0 };
+    }
+
+    if (genre) {
+      const genreArray = Array.isArray(genre) ? genre : [genre];
+      filter.genres = { $in: genreArray };
+    }
+
+    if (author) {
+      filter.author = { $regex: author, $options: "i" };
+    }
+
+    if (language) {
+      filter.language = { $regex: language, $options: "i" };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const books = await BookModel.find(filter)
+      .skip(skip)
+      .limit(parseInt(limit));
+    const totalBooks = await BookModel.countDocuments(filter);
+
+    return res.status(200).json({
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalBooks / parseInt(limit)),
+        pageSize: parseInt(limit),
+        totalBooks,
+      },
+      books,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
 
 module.exports = {
   createNewBook,
@@ -371,4 +427,5 @@ module.exports = {
   createNewBooks,
   borrowBook,
   returnBook,
+  searchBooks,
 };
