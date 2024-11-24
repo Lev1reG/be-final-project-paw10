@@ -10,6 +10,7 @@ const {
 const {
   createBorrowingRecord,
   alreadyBorrowed,
+  BorrowingRecord,
 } = require("../models/BorrowingRecords");
 const { decodeSessionJwt } = require("../helpers/authentication");
 const { getUserBySessionToken } = require("../models/User");
@@ -431,6 +432,51 @@ const getNewestBook = async (req, res) => {
   }
 }
 
+const getPopularBook = async (req, res) => {
+  try {
+    const popularBooks = await BorrowingRecord.aggregate([
+      {
+        $group: {
+          _id: "$book", // Group by book ID
+          borrowCount: { $sum: 1 }, // Count the number of times each book has been borrowed
+        },
+      },
+      {
+        $sort: { borrowCount: -1 }, // Sort by borrow count in descending order
+      },
+      {
+        $limit: 10, // Get the top 5 most borrowed books
+      },
+      {
+        $lookup: {
+          from: "books", // Lookup to get book details from the books collection
+          localField: "_id",
+          foreignField: "_id",
+          as: "bookDetails",
+        },
+      },
+      {
+        $unwind: "$bookDetails", // Unwind the bookDetails array
+      },
+      {
+        $project: {
+          _id: 0,
+          book: "$bookDetails",
+          borrowCount: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).send(popularBooks);
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   createNewBook,
   retrieveAllBooks,
@@ -442,4 +488,5 @@ module.exports = {
   returnBook,
   searchBooks,
   getNewestBook,
+  getPopularBook,
 };
