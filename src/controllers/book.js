@@ -418,6 +418,19 @@ const searchBooks = async (req, res) => {
   }
 };
 
+const getNewestBook = async (req, res) => {
+  try {
+    const newestBook = await BookModel.find().sort({ year: -1 }).limit(10);
+
+    return res.status(200).json(newestBook);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    }); 
+  }
+}
+
 module.exports = {
   createNewBook,
   retrieveAllBooks,
@@ -428,4 +441,5 @@ module.exports = {
   borrowBook,
   returnBook,
   searchBooks,
+  getNewestBook,
 };
