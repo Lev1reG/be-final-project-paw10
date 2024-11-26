@@ -132,7 +132,7 @@ const logoutUser = async (req, res) => {
     path: "/",
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: true,
   });
 
   return res.status(200).json({
