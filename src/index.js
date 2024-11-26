@@ -11,7 +11,9 @@ const app = express();
 
 const allowedOrigins = [
   "https://booknest.web.id",
+  "booknest.web.id",
   "https://fe-final-project-paw10.vercel.app",
+  "fe-final-project-paw10.vercel.app",
 ];
 
 // DOTENV CONFIG
