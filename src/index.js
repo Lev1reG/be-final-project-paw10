@@ -9,6 +9,13 @@ const process = require("process");
 
 const app = express();
 
+const allowedOrigins = [
+  "https://booknest.web.id",
+  "booknest.web.id",
+  "https://fe-final-project-paw10.vercel.app",
+  "fe-final-project-paw10.vercel.app",
+];
+
 // DOTENV CONFIG
 dotenv.config();
 
@@ -19,7 +26,19 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // CORS
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Check if the origin is in the allowed origins list
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allows cookies to be sent with requests
+  }),
+);
 
 // DB CONNECTION
 if (!process.env.MONGODB_URI) {
