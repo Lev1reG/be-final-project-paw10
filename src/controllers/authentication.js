@@ -131,8 +131,8 @@ const logoutUser = async (req, res) => {
   res.clearCookie("PAW_10_2024", {
     path: "/",
     httpOnly: true,
-    sameSite: "none",
-    secure: true,
+    sameSite: "lax",
+    secure: false,
   });
 
   return res.status(200).json({
