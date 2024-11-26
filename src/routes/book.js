@@ -13,10 +13,28 @@ router.get("/status", bookController.getTotalBooksAndBorrowedBooks);
 router.get("/search", bookController.searchBooks);
 router.get("/newest", bookController.getNewestBook);
 router.get("/popular", bookController.getPopularBook);
-router.get("/:id", validateObjectId,bookController.retrieveBookById);
-router.patch("/:id", auth.ensureAdmin, validateObjectId, bookController.updateBook);
-router.delete("/:id", auth.ensureAdmin, validateObjectId, bookController.deleteBook);
-router.post("/:id/borrow", auth.ensureCustomer, validateObjectId, bookController.borrowBook);
-router.post("/:id/return", auth.ensureCustomer, validateObjectId, bookController.returnBook);
+router.get("/:id", validateObjectId, bookController.retrieveBookById);
+router.patch(
+  "/:id",
+  auth.ensureAdmin,
+  validateObjectId,
+  bookController.updateBook,
+);
+router.delete(
+  "/:id",
+  auth.ensureAdmin,
+  validateObjectId,
+  bookController.deleteBook,
+);
+router.get(
+  "/:id/borrow",
+  validateObjectId,
+  bookController.borrowBook,
+);
+router.get(
+  "/:id/return",
+  validateObjectId,
+  bookController.returnBook,
+);
 
 module.exports = router;
