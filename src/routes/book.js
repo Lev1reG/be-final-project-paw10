@@ -9,6 +9,7 @@ const { validateObjectId } = require("../middlewares/book");
 router.post("/", auth.ensureAdmin, bookController.createNewBook);
 router.post("/populate", auth.ensureAdmin, bookController.createNewBooks);
 router.get("/", bookController.retrieveAllBooks);
+router.get("/status", bookController.getTotalBooksAndBorrowedBooks);
 router.get("/search", bookController.searchBooks);
 router.get("/newest", bookController.getNewestBook);
 router.get("/popular", bookController.getPopularBook);

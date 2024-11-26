@@ -419,6 +419,26 @@ const searchBooks = async (req, res) => {
   }
 };
 
+const getTotalBooksAndBorrowedBooks = async (req, res) => {
+  try {
+    const totalBooks = await BookModel.countDocuments();
+
+    const totalBorrowedBooks = await BorrowingRecord.countDocuments({
+      status: "borrowed", 
+    });
+
+    return res.status(200).json({
+      totalBooks,
+      totalBorrowedBooks,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 const getNewestBook = async (req, res) => {
   try {
     const newestBook = await BookModel.find().sort({ year: -1 }).limit(10);
@@ -428,9 +448,9 @@ const getNewestBook = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       message: "Something went wrong",
-    }); 
+    });
   }
-}
+};
 
 const getPopularBook = async (req, res) => {
   try {
@@ -468,7 +488,6 @@ const getPopularBook = async (req, res) => {
     ]);
 
     return res.status(200).send(popularBooks);
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -489,4 +508,5 @@ module.exports = {
   searchBooks,
   getNewestBook,
   getPopularBook,
+  getTotalBooksAndBorrowedBooks,
 };
