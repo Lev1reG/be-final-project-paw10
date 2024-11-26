@@ -44,7 +44,7 @@ const sendCookie = (res, cookie) => {
     path: "/",
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "none",
     secure: true,
   });
 };
