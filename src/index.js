@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // CORS
-app.use(cors({ origin: "https://fe-final-project-paw10", credentials: true }));
+app.use(cors({ origin: "https://fe-final-project-paw10.vercel.app", credentials: true }));
 
 // DB CONNECTION
 if (!process.env.MONGODB_URI) {
