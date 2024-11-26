@@ -19,12 +19,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 // CORS
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  }),
-);
+app.use(cors());
 
 // DB CONNECTION
 if (!process.env.MONGODB_URI) {
