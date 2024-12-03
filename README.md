@@ -2,7 +2,7 @@
 
 ## Deskripsi
 
-Menghubungkan aplikasi [Frontend](https://booknest.id) dengan database MongoDB. Backend ini dibuat menggunakan Express.js dan Mongoose.
+Menghubungkan aplikasi [Frontend](https://booknest.web.id) dengan database MongoDB. Backend ini dibuat menggunakan Express.js dan Mongoose.
 
 ## Instalasi
 
